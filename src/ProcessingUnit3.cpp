@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <array>
 #include <numeric>
 
@@ -7,20 +6,11 @@
 ProcessingUnit3::ProcessingUnit3(){}
 
 void ProcessingUnit3::input(std::optional<ProcessingUnit3::InputType> newValues) {
-	// Replace the existing values with the new ones
-	if (newValues.has_value() && currentValues.has_value()) {
-		std::copy(
-				std::begin(newValues.value()), 
-				std::end(newValues.value()), 
-				std::begin(currentValues.value()));
-	}
-	else if (newValues.has_value()) {
-		currentValues = newValues;
-	}
-	else {
-		currentValues = std::nullopt;
-	}
+	// this function implements basic exception safety guarantee even without doing anything
+	// special, because there are no invalid intermediate states. 
+	currentValues = newValues;
 }
+
 std::optional<ProcessingUnit3::OutputType> ProcessingUnit3::output() {
 	if (currentValues.has_value()) {
 		double sum = std::accumulate(currentValues.value().begin(), currentValues.value().end(), 0.0);

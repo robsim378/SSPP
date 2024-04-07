@@ -1,23 +1,27 @@
-#include <algorithm>
 #include <array>
+#include <iostream>
 
 #include "ProcessingUnit1.hpp"
 
 ProcessingUnit1::ProcessingUnit1(){}
 
 void ProcessingUnit1::input(std::optional<ProcessingUnit1::InputType> newValues) {
-	// Replace the existing values with the new ones
-	if (newValues.has_value() && currentValues.has_value()) {
-		std::copy(
-				std::begin(newValues.value()), 
-				std::end(newValues.value()), 
-				std::begin(currentValues.value()));
-	}
-	else if (newValues.has_value()) {
+	// Create a copy of the currentValues in case an exception occurs
+	std::optional<InputType> tempCurrentValues = currentValues;
+
+	// Replace the stored input with the new input.
+	try{
 		currentValues = newValues;
 	}
-	else {
-		currentValues = std::nullopt;
+	catch(...){
+		// Restore the initial value of currentValues on all exceptions, ensuring 
+		// a strong exception safety guarantee.
+		currentValues = tempCurrentValues;
+
+		std::cerr << "Unknown error occured when inputting to PU1" << std::endl;
+
+		// Rethrow the excepton
+		throw;
 	}
 }
 std::optional<ProcessingUnit1::OutputType> ProcessingUnit1::output() {

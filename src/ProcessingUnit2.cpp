@@ -25,20 +25,9 @@ std::array<T, N> ProcessingUnit2::divideArray(const std::array<T, N>& a, T divis
 }
 
 void ProcessingUnit2::input(std::optional<ProcessingUnit2::InputType> newValues) {
-	// Replace the oldest values with the new ones. If the input was nothing,
-	// replace the oldest values with nothing.
-	if (newValues.has_value() && currentValues[currentIndex].has_value()) {
-		std::copy(
-				std::begin(newValues.value()), 
-				std::end(newValues.value()), 
-				std::begin(currentValues[currentIndex].value()));
-	}
-	else if (newValues.has_value()) {
-		currentValues[currentIndex] = newValues;
-	}
-	else {
-		currentValues[currentIndex].reset();
-	}
+	// this function implements basic exception safety guarantee even without doing anything
+	// special, because there are no invalid intermediate states.
+	currentValues[currentIndex] = newValues;
 
 	// Instead of shifting all the past stored values over, we just maintain the index of the next value to 
 	// be overwritten by new input. This saves a good amount of copying.

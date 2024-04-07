@@ -27,7 +27,8 @@ std::array<T, N> ProcessingUnit2::divideArray(const std::array<T, N>& a, T divis
 }
 
 void ProcessingUnit2::input(std::optional<ProcessingUnit2::InputType> newValues) {
-	// Replace the oldest values with the new ones
+	// Replace the oldest values with the new ones. If the input was nothing,
+	// replace the oldest values with nothing.
 	if (newValues.has_value() && currentValues[currentIndex].has_value()) {
 		std::copy(
 				std::begin(newValues.value()), 
@@ -38,16 +39,12 @@ void ProcessingUnit2::input(std::optional<ProcessingUnit2::InputType> newValues)
 		currentValues[currentIndex] = newValues;
 	}
 	else {
-		currentValues[currentIndex] = std::nullopt;
+		currentValues[currentIndex].reset();
 	}
 
 	// Instead of shifting all the past stored values over, we just maintain the index of the next value to 
 	// be overwritten by new input. This saves a good amount of copying.
 	currentIndex = (currentIndex + 1) % num_past_values;
-
-	// numStoredValues is used to ensure the calcuations are done correctly before the array is filled. Once
-	// enough inputs have been received to fill the array, it will always be equal to num_past_values.
-	// numStoredValues = std::min(numStoredValues + 1, num_past_values);
 }
 
 std::optional<ProcessingUnit2::OutputType> ProcessingUnit2::output() {

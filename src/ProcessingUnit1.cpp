@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <array>
-#include <iostream>
 
 #include "ProcessingUnit1.hpp"
 
@@ -22,7 +21,6 @@ void ProcessingUnit1::input(std::optional<ProcessingUnit1::InputType> newValues)
 	}
 }
 std::optional<ProcessingUnit1::OutputType> ProcessingUnit1::output() {
-	// If there has been an unprocessed input, 
 	if (currentValues.has_value()) {
 		OutputType outputValues;
 		outputValues = {};

@@ -34,7 +34,6 @@ class ProcessingUnit2 {
 		std::optional<OutputType> output();
 	private:
 		static constexpr int num_past_values = 5;
-		int numStoredValues;
 		int currentIndex;
 		std::array<std::optional<InputType>,num_past_values> currentValues = {}; 
 };

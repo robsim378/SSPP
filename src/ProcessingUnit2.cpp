@@ -1,13 +1,11 @@
 #include <algorithm>
 #include <array>
 #include <functional>
-#include <iostream>
 #include <optional>
 
 #include "ProcessingUnit2.hpp"
 
 ProcessingUnit2::ProcessingUnit2() {
-	// numStoredValues = 0;
 	currentIndex = 0;
 }
 

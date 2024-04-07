@@ -1,7 +1,5 @@
+#include <iostream>
 #include <optional>
-#include <concepts>
-#include <utility>
-#include "ProcessingUnit1.hpp"
 
 // Concept used to validate that the output type of one PU 
 // is a valid input type to another.
@@ -15,8 +13,8 @@ template<typename PU>
 concept ValidPU = requires (PU pu) {
 	typename PU::InputType;
 	typename PU::OutputType;
-	{ pu.input(PU::InputType) } -> std::same_as<void>;
-	{ pu.output() } -> std::same_as<typename PU::OutputType>;
+	{ pu.input(std::optional<typename PU::InputType>{}) } -> std::same_as<void>;
+	{ pu.output() } -> std::same_as<std::optional<typename PU::OutputType>>;
 };
 
 
@@ -31,7 +29,7 @@ class SSPP {
 			pu3 = a_pu3;
 		}
 
-		std::optional<typename PU2::OutputType> executeStep(std::optional<typename PU1::InputType> input) {
+		std::optional<typename PU3::OutputType> executeStep(std::optional<typename PU1::InputType> input) {
 			// Calculate the outputs first, then do inputs. This way we don't have to
 			// care about the order the PUs are executed in.
 			std::optional<typename PU1::OutputType> pu1Output;
@@ -45,7 +43,8 @@ class SSPP {
 			pu1.input(input);
 			pu2.input(pu1Output);
 			pu3.input(pu2Output);
-			return pu3.output();
+
+			return pu3Output;
 		}
 	private:
 		PU1 pu1;

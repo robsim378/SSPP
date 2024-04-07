@@ -1,10 +1,9 @@
-#include <iostream>
-#include <optional>
 #define CATCH_CONFIG_MAIN
-
-#include <array>
-
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
+#include <optional>
+
+#include "SSPP.hpp"
 #include "ProcessingUnit1.hpp"
 #include "ProcessingUnit2.hpp"
 #include "ProcessingUnit3.hpp"
@@ -187,11 +186,23 @@ TEST_CASE("Testing PU3 on simple valid input") {
 
 	pu3.input(input);
 	std::optional<ProcessingUnit3::OutputType> result;
-	std::cout << expectedOutput.value() << std::endl;
 	result = pu3.output();
-	std::cout << result.value() << std::endl;
 
 	REQUIRE(expectedOutput == result);
+}
+
+TEST_CASE("Testing PU3 on some more complex valid input") {
+	ProcessingUnit3 pu3;
+	std::optional<ProcessingUnit3::InputType> input;
+	input = {-2.3, 1.5, 15};
+	std::optional<ProcessingUnit3::OutputType> expectedOutput;
+	expectedOutput = 14.2 / 3.0;
+
+	pu3.input(input);
+	std::optional<ProcessingUnit3::OutputType> result;
+	result = pu3.output();
+
+	REQUIRE(expectedOutput == Catch::Approx(result.value()).epsilon(1e-6));
 }
 
 TEST_CASE("Testing PU3 output with no input") {
@@ -208,13 +219,74 @@ TEST_CASE("Testing that inputting nothing clears PU3 output") {
 
 	pu3.input(input);
 	std::optional<ProcessingUnit3::OutputType> result;
-	std::cout << expectedOutput.value() << std::endl;
 	result = pu3.output();
-	std::cout << result.value() << std::endl;
 
 	REQUIRE(expectedOutput == result);
 
 	pu3.input(std::nullopt);
 	REQUIRE(pu3.output() == std::nullopt);
-
 }
+
+TEST_CASE("Testing SSPP") {
+	ProcessingUnit1 pu1;
+	ProcessingUnit2 pu2;
+	ProcessingUnit3 pu3;
+
+	SSPP<ProcessingUnit1,ProcessingUnit2,ProcessingUnit3> sspp(pu1, pu2, pu3);
+
+	std::optional<ProcessingUnit1::InputType> input;
+	std::optional<ProcessingUnit3::OutputType> expectedOutput;
+
+	// We should not see any output until the 4th input.
+	// First input. 
+	input = {0, 1, 2, 3, 4};
+	REQUIRE(!sspp.executeStep(input).has_value());
+
+	// Second input
+	input = {0, 2, 4, 6, 8};
+	REQUIRE(!sspp.executeStep(input).has_value());
+
+	// Third input
+	input = {10, -3, 9, 0, -22};
+	REQUIRE(!sspp.executeStep(input).has_value());
+
+	// Fourth input. Here we should start seeing some output. We will also stop
+	// providing input here to test that it correctly stops outputting.
+	input = std::nullopt;
+	expectedOutput = 2.0;
+	REQUIRE(sspp.executeStep(input).value() == Catch::Approx(expectedOutput.value()).epsilon(1e-6));
+
+	// Fifth input. Here we should start seeing the past data from PU2 kick in.
+	expectedOutput = 3.0;
+	REQUIRE(sspp.executeStep(input).value() == Catch::Approx(expectedOutput.value()).epsilon(1e-6));
+
+	// Fifth input. Here we should start seeing the past data from PU2 kick in.
+	expectedOutput = 21.0 / 9.0;
+	REQUIRE(sspp.executeStep(input).value() == Catch::Approx(expectedOutput.value()).epsilon(1e-6));
+
+	// Sixth input. Nothing should change here.
+	REQUIRE(sspp.executeStep(input).value() == Catch::Approx(expectedOutput.value()).epsilon(1e-6));
+
+	// Seventh input. Nothing should change here.
+	REQUIRE(sspp.executeStep(input).value() == Catch::Approx(expectedOutput.value()).epsilon(1e-6));
+
+	// Eigth input. The first input should be gone now.
+	expectedOutput = 2.5;
+	REQUIRE(sspp.executeStep(input).value() == Catch::Approx(expectedOutput.value()).epsilon(1e-6));
+
+	// Ninth input. The first two inputs should be gone now.
+	expectedOutput = 1;
+	REQUIRE(sspp.executeStep(input).value() == Catch::Approx(expectedOutput.value()).epsilon(1e-6));
+
+	// Tenth input. There should be no output here.
+	REQUIRE(!sspp.executeStep(input).has_value());
+}
+
+
+
+
+
+
+
+
+

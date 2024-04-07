@@ -23,7 +23,8 @@ void ProcessingUnit3::input(std::optional<ProcessingUnit3::InputType> newValues)
 }
 std::optional<ProcessingUnit3::OutputType> ProcessingUnit3::output() {
 	if (currentValues.has_value()) {
-		return std::accumulate(currentValues.value().begin(), currentValues.value().end(), 0) / 3;
+		double sum = std::accumulate(currentValues.value().begin(), currentValues.value().end(), 0.0);
+		return sum / 3.0;
 	}
 	else {
 		return std::nullopt;

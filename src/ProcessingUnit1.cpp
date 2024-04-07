@@ -1,11 +1,12 @@
 #include <algorithm>
 #include <array>
+#include <iostream>
 
 #include "ProcessingUnit1.hpp"
 
 ProcessingUnit1::ProcessingUnit1(){}
 
-void ProcessingUnit1::input(ProcessingUnit1::InputType newValues) {
+void ProcessingUnit1::input(std::optional<ProcessingUnit1::InputType> newValues) {
 	// Replace the existing values with the new ones
 	if (newValues.has_value() && currentValues.has_value()) {
 		std::copy(
@@ -16,16 +17,17 @@ void ProcessingUnit1::input(ProcessingUnit1::InputType newValues) {
 	else if (newValues.has_value()) {
 		currentValues = newValues;
 	}
-	else if (currentValues.has_value()) {
+	else {
 		currentValues = std::nullopt;
 	}
 }
-ProcessingUnit1::OutputType ProcessingUnit1::output() {
-	// Iterative solution for now, look into more efficient std generic options.
+std::optional<ProcessingUnit1::OutputType> ProcessingUnit1::output() {
+	// If there has been an unprocessed input, 
 	if (currentValues.has_value()) {
 		OutputType outputValues;
+		outputValues = {};
 		for (int i = 0; i < output_length; i++) {
-			outputValues.value()[i] = ((double)currentValues.value()[i] + (double)currentValues.value()[i + 1] + (double)currentValues.value()[i + 2]) / 3;
+			outputValues[i] = ((double)currentValues.value()[i] + (double)currentValues.value()[i + 1] + (double)currentValues.value()[i + 2]) / 3;
 		}
 		return outputValues;
 	}

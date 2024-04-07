@@ -11,24 +11,30 @@
 
 TEST_CASE("Testing PU1 on simple valid input") {
 	ProcessingUnit1 pu1;
-	std::array<int,ProcessingUnit1::input_length> input = {0, 1, 2, 3, 4};
-	std::array<double,ProcessingUnit1::output_length> expectedOutput = {1.0, 2.0, 3.0};
+	std::optional<ProcessingUnit1::InputType> input;
+	input = {0, 1, 2, 3, 4};
+	std::optional<ProcessingUnit1::OutputType> expectedOutput;
+	expectedOutput = {1.0, 2.0, 3.0};
 
 	pu1.input(input);
-	std::array<double,ProcessingUnit1::output_length> result = pu1.output();
+	std::optional<ProcessingUnit1::OutputType> result;
+	result = pu1.output();
 
 	REQUIRE(expectedOutput == result);
 }
 
 TEST_CASE("Testing PU1 on more complex valid input") {
 	ProcessingUnit1 pu1;
-	std::array<int,ProcessingUnit1::input_length> input = {4, 2, 6, -10, 0};
+	std::optional<ProcessingUnit1::InputType> input;
+	input = {4, 2, 6, -10, 0};
 	// For non-whole numbered values, perform a caluclation instead of a hardcoded decimal since
 	// floats are sometimes a bit off and may not like that.
-	std::array<double,ProcessingUnit1::output_length> expectedOutput = {4, -2.0/3, -4.0/3};
+	std::optional<ProcessingUnit1::OutputType> expectedOutput;
+	expectedOutput = {4, -2.0/3, -4.0/3};
 
 	pu1.input(input);
-	std::array<double,ProcessingUnit1::output_length> result = pu1.output();
+	std::optional<ProcessingUnit1::OutputType> result;
+	result = pu1.output();
 
 	REQUIRE(expectedOutput == result);
 }

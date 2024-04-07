@@ -2,6 +2,7 @@
 #define HEADER_PROCESSING_UNIT_2
 
 #include <array>
+#include <optional>
 
 /* This is the first PU for this assignment. Input to the system, in the form of an std::array<int,5>,
    goes here, and its output goes to ProcessingUnit2. This processing unit goes through each element in the
@@ -26,16 +27,16 @@ class ProcessingUnit2 {
 		static std::array<T, N> divideArray(const std::array<T, N>& a, T divisor);
 		
 		// Take a new array as input and replace the currently stored one with it.
-		void input(InputType newValues);
+		void input(std::optional<InputType> newValues);
 
 		// Apply this PU's transformation to the current values and return the result
 
-		OutputType output();
+		std::optional<OutputType> output();
 	private:
 		static constexpr int num_past_values = 5;
 		int numStoredValues;
 		int currentIndex;
-		std::array<InputType,num_past_values> currentValues = {}; 
+		std::array<std::optional<InputType>,num_past_values> currentValues = {}; 
 };
 
 #endif

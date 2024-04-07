@@ -44,53 +44,59 @@ TEST_CASE("Testing PU1 on more complex valid input") {
 // inputs fill up.
 TEST_CASE("Testing PU2 on a series of valid inputs") {
 	ProcessingUnit2 pu2;
-	std::array<double,ProcessingUnit2::input_length> input = {};
-	std::array<double,ProcessingUnit2::output_length> expectedOutput = {};
+	std::optional<ProcessingUnit2::InputType> input;
+	input = {};
+	std::optional<ProcessingUnit2::OutputType> expectedOutput;
+	expectedOutput = {};
 	// Sum of all inputs so far. This will be used to calculate expectedOutput at each step.
-	std::array<double,ProcessingUnit2::output_length> inputTotal = {};
+	std::optional<ProcessingUnit2::InputType> inputTotal;
+	inputTotal = {};
+
 
 	// First input
 	input = {1.0, 2.0, 3.0};
-	inputTotal = ProcessingUnit2::addArrays(inputTotal, input);
-	expectedOutput = ProcessingUnit2::divideArray(inputTotal, 1.0);
+	// For the first input, we can just make inputTotal equal to input. this also
+	// means we don't have to deal with initializing inputTotal.
+	inputTotal = input;
+	expectedOutput = ProcessingUnit2::divideArray(inputTotal.value(), 1.0);
 	pu2.input(input);
 	REQUIRE(expectedOutput == pu2.output());
 
 	// Second input
 	input = {3.0, 5.0, 7.0};
-	inputTotal = ProcessingUnit2::addArrays(inputTotal, input);
-	expectedOutput = ProcessingUnit2::divideArray(inputTotal, 2.0);
+	inputTotal = ProcessingUnit2::addArrays(inputTotal.value(), input.value());
+	expectedOutput = ProcessingUnit2::divideArray(inputTotal.value(), 2.0);
 	pu2.input(input);
 	REQUIRE(expectedOutput == pu2.output());
 
 	// Third input
 	input = {25.0, 0.00001, -70.0};
-	inputTotal = ProcessingUnit2::addArrays(inputTotal, input);
-	expectedOutput = ProcessingUnit2::divideArray(inputTotal, 3.0);
+	inputTotal = ProcessingUnit2::addArrays(inputTotal.value(), input.value());
+	expectedOutput = ProcessingUnit2::divideArray(inputTotal.value(), 3.0);
 	pu2.input(input);
 	REQUIRE(expectedOutput == pu2.output());
 
 	// Fourth input
 	input = {0.0, 0.0, 0.0};
-	inputTotal = ProcessingUnit2::addArrays(inputTotal, input);
-	expectedOutput = ProcessingUnit2::divideArray(inputTotal, 4.0);
+	inputTotal = ProcessingUnit2::addArrays(inputTotal.value(), input.value());
+	expectedOutput = ProcessingUnit2::divideArray(inputTotal.value(), 4.0);
 	pu2.input(input);
 	REQUIRE(expectedOutput == pu2.output());
 
 	// Fifth input
 	input = {1000.0, -5000.0, 75.23534};
-	inputTotal = ProcessingUnit2::addArrays(inputTotal, input);
-	expectedOutput = ProcessingUnit2::divideArray(inputTotal, 5.0);
+	inputTotal = ProcessingUnit2::addArrays(inputTotal.value(), input.value());
+	expectedOutput = ProcessingUnit2::divideArray(inputTotal.value(), 5.0);
 	pu2.input(input);
 	REQUIRE(expectedOutput == pu2.output());
 
 	// Sixth input. This one is a bit different from the others, because the first
 	// input should now be overwritten.
 	input = {1000.0, -5000.0, 75.23534};
-	inputTotal = ProcessingUnit2::addArrays(inputTotal, input);
+	inputTotal = ProcessingUnit2::addArrays(inputTotal.value(), input.value());
 	// This removes the first input from the total since it should now be overwritten
-	inputTotal = ProcessingUnit2::addArrays(inputTotal, {-1.0, -2.0, -3.0});
-	expectedOutput = ProcessingUnit2::divideArray(inputTotal, 5.0);
+	inputTotal = ProcessingUnit2::addArrays(inputTotal.value(), {-1.0, -2.0, -3.0});
+	expectedOutput = ProcessingUnit2::divideArray(inputTotal.value(), 5.0);
 	pu2.input(input);
 	REQUIRE(expectedOutput == pu2.output());
 }

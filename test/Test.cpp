@@ -198,3 +198,23 @@ TEST_CASE("Testing PU3 output with no input") {
 	ProcessingUnit3 pu3;
 	REQUIRE(!pu3.output().has_value());
 }
+
+TEST_CASE("Testing that inputting nothing clears PU3 output") {
+	ProcessingUnit3 pu3;
+	std::optional<ProcessingUnit3::InputType> input;
+	input = {0, 1, 2};
+	std::optional<ProcessingUnit3::OutputType> expectedOutput;
+	expectedOutput = 1.0;
+
+	pu3.input(input);
+	std::optional<ProcessingUnit3::OutputType> result;
+	std::cout << expectedOutput.value() << std::endl;
+	result = pu3.output();
+	std::cout << result.value() << std::endl;
+
+	REQUIRE(expectedOutput == result);
+
+	pu3.input(std::nullopt);
+	REQUIRE(pu3.output() == std::nullopt);
+
+}
